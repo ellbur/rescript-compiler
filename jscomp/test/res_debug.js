@@ -10,8 +10,16 @@ function f($$window, a, b) {
 }
 
 var v0 = {
-  x: 3,
-  z: 2
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 2))
 };
 
 var newrecord = Caml_obj.obj_dup(v0);
@@ -39,7 +47,11 @@ var ok_name = optionMap(undefined, (function (x) {
       }));
 
 var ok = {
-  name: ok_name
+  ...((function (opt) {
+          opt ? ({
+                name: opt
+              }) : ({});
+        }).apply(null, ok_name))
 };
 
 var bad_name = optionMap(undefined, (function (x) {
@@ -47,7 +59,11 @@ var bad_name = optionMap(undefined, (function (x) {
       }));
 
 var bad = {
-  name: bad_name
+  ...((function (opt) {
+          opt ? ({
+                name: opt
+              }) : ({});
+        }).apply(null, bad_name))
 };
 
 function identity(x) {
@@ -57,18 +73,34 @@ function identity(x) {
 var name1 = "ReScript";
 
 var ok1 = {
-  name: name1
+  ...((function (opt) {
+          opt ? ({
+                name: opt
+              }) : ({});
+        }).apply(null, name1))
 };
 
 var bad1 = {
-  name: name1
+  ...((function (opt) {
+          opt ? ({
+                name: opt
+              }) : ({});
+        }).apply(null, name1))
 };
 
 var v2 = newrecord;
 
 var v1 = {
-  x: 3,
-  z: 3
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 3))
 };
 
 var h = /* '😊' */128522;

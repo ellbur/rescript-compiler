@@ -2,19 +2,16 @@
 'use strict';
 
 
-var vxy = {
-  x: 10,
-  y: "abc"
-};
+var x = Math.random() < 2.0 ? undefined : 1;
 
-var xxi = {
+var r = {
   ...((function (opt) {
           opt ? ({
                 x: opt
               }) : ({});
-        }).apply(null, 10))
+        }).apply(null, x))
 };
 
-exports.vxy = vxy;
-exports.xxi = xxi;
-/* No side effect */
+exports.x = x;
+exports.r = r;
+/* x Not a pure module */

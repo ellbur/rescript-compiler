@@ -24,8 +24,16 @@ var v2 = {
 };
 
 var x = {
-  name: "test",
-  x: "test"
+  ...((function (opt) {
+          opt ? ({
+                name: opt
+              }) : ({});
+        }).apply(null, "test")),
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, "test"))
 };
 
 exports.v = v;

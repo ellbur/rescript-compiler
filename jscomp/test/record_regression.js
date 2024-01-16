@@ -5,8 +5,16 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var f1 = {
-  x: 3,
-  z: 2
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 2))
 };
 
 var newrecord = Caml_obj.obj_dup(f1);
@@ -23,8 +31,16 @@ var theseTwoShouldBeIdentical = [
 ];
 
 var v = {
-  x: 2,
-  z: 3
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 2)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 3))
 };
 
 var newrecord$2 = Caml_obj.obj_dup(v);
@@ -32,8 +48,16 @@ var newrecord$2 = Caml_obj.obj_dup(v);
 newrecord$2.y1 = 22;
 
 var v1 = {
-  x: 2,
-  z: 3
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 2)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 3))
 };
 
 var newrecord$3 = Caml_obj.obj_dup(v1);
@@ -47,8 +71,16 @@ function h11(v1) {
 }
 
 var po = {
-  aa: 3,
-  bb: 4
+  ...((function (opt) {
+          opt ? ({
+                aa: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                bb: opt
+              }) : ({});
+        }).apply(null, 4))
 };
 
 var newrecord$4 = Caml_obj.obj_dup(po);
@@ -57,7 +89,11 @@ newrecord$4.aa = undefined;
 
 function setAA(ao) {
   return {
-          aa: ao
+          ...((function (opt) {
+                  opt ? ({
+                        aa: opt
+                      }) : ({});
+                }).apply(null, ao))
         };
 }
 
@@ -239,9 +275,21 @@ var pm3 = inlinedRecord(ir2);
 var pm4 = inlinedRecord(ir3);
 
 var f2 = {
-  x: 3,
-  y: 3,
-  z: 3
+  ...((function (opt) {
+          opt ? ({
+                x: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                y: opt
+              }) : ({});
+        }).apply(null, 3)),
+  ...((function (opt) {
+          opt ? ({
+                z: opt
+              }) : ({});
+        }).apply(null, 3))
 };
 
 var f3 = newrecord;

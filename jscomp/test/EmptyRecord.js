@@ -5,7 +5,11 @@
 function construct(b) {
   if (b) {
     return {
-            n: 0
+            ...((function (opt) {
+                    opt ? ({
+                          n: opt
+                        }) : ({});
+                  }).apply(null, 0))
           };
   } else {
     return {};
