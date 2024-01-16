@@ -742,13 +742,67 @@ and expression_desc cxt ~(level : int) f x : cxt =
               (Object (Ext_list.combine_array fields el (fun i -> Js_op.Lit i)))
         | Record_optional ->
             let fields =
-              Ext_list.array_list_filter_map fields el (fun f x ->
+              Ext_list.array_list_filter_map fields el (fun field_name x ->
                   match x.expression_desc with
                   | Undefined _ -> None
-                  | _ -> Some (Js_op.Lit f, x)
+                  | _ -> Some (
+                    let param_name = Ext_ident.create "opt"
+                    in let car_body = [
+                      let
+                        the_param: J.expression = {
+                          expression_desc = J.Var (Id param_name);
+                          comment = None
+                        }
+                      in let 
+                        if_true: J.expression = {
+                          expression_desc = J.Object [(Js_op.Lit field_name, the_param)];
+                          comment = None
+                        }
+                      in let
+                        if_false: J.expression = {
+                          expression_desc = J.Object [];
+                          comment = None
+                        }
+                      in {
+                        J.statement_desc = J.Exp {
+                          expression_desc = J.Cond (
+                            the_param,
+                            if_true,
+                            if_false
+                          );
+                          comment = None
+                        }; 
+                        comment = None 
+                      }
+                    ]
+                    in let
+                      car : J.expression = {
+                        expression_desc = J.Fun {
+                          is_method = false;
+                          params = [param_name];
+                          body = car_body;
+                          env = Js_fun_env.make 0;
+                          return_unit = false;
+                          async = false
+                        };
+                        comment = None
+                      }
+                    in let
+                      cdr : J.expression = {
+                        expression_desc = x.expression_desc;
+                        comment = None
+                      }
+                    in let
+                      e1 : J.expression_desc = J.FlatCall (car, cdr)
+                    in
+                    J.Spread ({
+                      expression_desc = e1;
+                      comment = x.comment
+                    })
+                  )
               )
             in
-            expression_desc cxt ~level f (Object fields))
+            expression_desc cxt ~level f (ObjectWithSpreads fields))
   | Caml_block (el, _, _, Blk_poly_var _) -> (
       match el with
       | [ tag; value ] ->
