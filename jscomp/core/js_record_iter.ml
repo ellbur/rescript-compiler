@@ -76,6 +76,14 @@ let for_direction : for_direction fn = unknown
 let property_map : property_map fn =
  fun _self arg ->
   list (fun _self (_x0, _x1) -> _self.expression _self _x1) _self arg
+  
+let spread_or_property_map : spread_or_property_map fn =
+ fun _self arg ->
+  let map_helper _self entry = match entry with
+    | Spread expr -> _self.expression _self expr
+    | Property (name, expr) -> _self.expression _self expr
+  in
+  list map_helper _self arg
 
 let length_object : length_object fn = unknown
 
@@ -131,6 +139,7 @@ let expression_desc : expression_desc fn =
   | Caml_block_tag (_x0, _tag) -> _self.expression _self _x0
   | Number _ -> ()
   | Object _x0 -> property_map _self _x0
+  | ObjectWithSpreads _x0 -> spread_or_property_map _self _x0
   | Undefined _ -> ()
   | Null -> ()
   | Await _x0 -> _self.expression _self _x0

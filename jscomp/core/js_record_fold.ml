@@ -87,6 +87,14 @@ let property_map : 'a. ('a, property_map) fn =
       st)
     _self st arg
 
+let spread_or_property_map : 'a. ('a, spread_or_property_map) fn =
+ fun _self st arg ->
+  let map_helper _self st entry = match entry with
+    | Spread expr -> _self.expression _self st expr
+    | Property (name, expr) -> _self.expression _self st expr
+  in
+  list map_helper _self st arg
+
 let length_object : 'a. ('a, length_object) fn = unknown
 
 let expression_desc : 'a. ('a, expression_desc) fn =
@@ -174,6 +182,9 @@ let expression_desc : 'a. ('a, expression_desc) fn =
   | Number _ -> st
   | Object _x0 ->
       let st = property_map _self st _x0 in
+      st
+  | ObjectWithSpreads _x0 ->
+      let st = spread_or_property_map _self st _x0 in
       st
   | Undefined _ -> st
   | Null -> st

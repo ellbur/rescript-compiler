@@ -80,6 +80,16 @@ class fold =
           let _self = _self#expression _x1 in
           _self)
         _self
+        
+    method spread_or_property_map : spread_or_property_map -> 'self_type =
+      let map_helper _self entry = 
+        let _self =
+          match entry with
+            | Spread expr -> _self#expression expr
+            | Property (name, expr) -> _self#expression expr
+        in _self
+      in
+      list map_helper _self
 
     method length_object : length_object -> 'self_type = unknown _self
 
@@ -168,6 +178,9 @@ class fold =
       | Number _ -> _self
       | Object _x0 ->
           let _self = _self#property_map _x0 in
+          _self
+      | ObjectWithSpreads _x0 ->
+          let _self = _self#spread_or_property_map _x0 in
           _self
       | Undefined _ -> _self
       | Null -> _self

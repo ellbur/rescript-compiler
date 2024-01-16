@@ -155,7 +155,7 @@ let exp_need_paren (e : J.expression) =
         _,
         ( Blk_record _ | Blk_module _ | Blk_poly_var _ | Blk_extension
         | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ) )
-  | Object _ ->
+  | Object _ | ObjectWithSpreads _ ->
       true
   | Raw_js_code { code_info = Stmt _ }
   | Length _ | Call _ | Caml_block_tag _ | Seq _ | Static_index _ | Cond _
@@ -745,7 +745,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
               Ext_list.array_list_filter_map fields el (fun f x ->
                   match x.expression_desc with
                   | Undefined _ -> None
-                  | _ -> Some (Js_op.Lit f, x))
+                  | _ -> Some (Js_op.Lit f, x)
+              )
             in
             expression_desc cxt ~level f (Object fields))
   | Caml_block (el, _, _, Blk_poly_var _) -> (
@@ -905,31 +906,47 @@ and expression_desc cxt ~(level : int) f x : cxt =
             cxt)
           else
             P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
+  | ObjectWithSpreads lst ->
+      P.cond_paren_group f (level > 1) 1 (fun _ ->
+          if lst = [] then (
+            P.string f "{}";
+            cxt)
+          else
+            P.brace_vgroup f 1 (fun _ -> spread_or_property_name_and_value_list cxt f lst))
   | Await e ->
       P.cond_paren_group f (level > 13) 1 (fun _ ->
           P.string f "await ";
           expression ~level:13 cxt f e)
 
+and property_name_and_value cxt f (pn : J.property_name) (e : J.expression) =
+  match e.expression_desc with
+  | Var (Id v | Qualified ({ id = v; _ }, None)) ->
+      let key = Js_dump_property.property_key pn in
+      let str, cxt = Ext_pp_scope.str_of_ident cxt v in
+      let content =
+        (* if key = str then key
+           else *)
+        key ^ L.colon_space ^ str
+      in
+      P.string f content;
+      cxt
+  | _ ->
+      let key = Js_dump_property.property_key pn in
+      P.string f key;
+      P.string f L.colon_space;
+      expression ~level:1 cxt f e
+      
 and property_name_and_value_list cxt f (l : J.property_map) =
-  iter_lst cxt f l
-    (fun cxt f (pn, e) ->
-      match e.expression_desc with
-      | Var (Id v | Qualified ({ id = v; _ }, None)) ->
-          let key = Js_dump_property.property_key pn in
-          let str, cxt = Ext_pp_scope.str_of_ident cxt v in
-          let content =
-            (* if key = str then key
-               else *)
-            key ^ L.colon_space ^ str
-          in
-          P.string f content;
-          cxt
-      | _ ->
-          let key = Js_dump_property.property_key pn in
-          P.string f key;
-          P.string f L.colon_space;
-          expression ~level:1 cxt f e)
-    comma_nl
+  iter_lst cxt f l (fun cxt f (pn, e) -> property_name_and_value cxt f pn e) comma_nl
+
+and spread_or_property_name_and_value_list cxt f (l : J.spread_or_property_map) =
+  let map_helper cxt f elem = match elem with
+    | J.Property (pn, e) -> property_name_and_value cxt f pn e
+    | J.Spread e ->
+       P.string f "...";
+       P.paren_group f 1 (fun _ -> expression ~level:1 cxt f e)
+  in
+  iter_lst cxt f l map_helper comma_nl
 
 and array_element_list cxt f (el : E.t list) : cxt =
   iter_lst cxt f el (expression ~level:1) comma_nl

@@ -87,6 +87,14 @@ let property_map : property_map fn =
       (_x0, _x1))
     _self arg
 
+let spread_or_property_map : spread_or_property_map fn =
+ fun _self arg ->
+  let map_helper _self entry = match entry with
+    | Spread expr -> Spread (_self.expression _self expr)
+    | Property (name, expr) -> Property (name, _self.expression _self expr)
+  in
+  list map_helper _self arg
+
 let length_object : length_object fn = unknown
 
 let expression_desc : expression_desc fn =
@@ -173,6 +181,9 @@ let expression_desc : expression_desc fn =
   | Object _x0 ->
       let _x0 = property_map _self _x0 in
       Object _x0
+  | ObjectWithSpreads _x0 ->
+      let _x0 = spread_or_property_map _self _x0 in
+      ObjectWithSpreads _x0
   | Undefined _ as v -> v
   | Null as v -> v
   | Await _x0 ->

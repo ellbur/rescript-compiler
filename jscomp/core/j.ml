@@ -75,6 +75,8 @@ and exception_ident = ident
 and for_ident = ident
 and for_direction = Js_op.direction_flag
 and property_map = (property_name * expression) list
+and spread_or_property = Spread of expression | Property of property_name * expression
+and spread_or_property_map = spread_or_property list
 and length_object = Js_op.length_object
 and delim = External_arg_spec.delim = | DNone | DStarJ | DNoQuotes
 
@@ -159,6 +161,7 @@ and expression_desc =
   *)
   | Number of number
   | Object of property_map
+  | ObjectWithSpreads of spread_or_property_map
   | Undefined of {isUnit: bool}
   | Null
   | Await of expression
